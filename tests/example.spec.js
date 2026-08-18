@@ -33,8 +33,8 @@ test('Bourne Health login redirects to OTP screen', async ({ page }) => {
   // Click the Login button
   await page.getByRole('button', { name: 'Login' }).click();
 
-  // Verify that the user is redirected to the OTP screen
-  //await expect(page).toHaveURL(/otp|verification/i);
+//  Verify that the user is redirected to the OTP screen
+  await expect(page).toHaveURL('https://app.qa.bournehealth.co.uk/otp');
 
   // Verify that the OTP screen is displayed
   // await expect(
