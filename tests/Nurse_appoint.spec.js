@@ -188,34 +188,268 @@ test('Patient Request - Nurse Contraception - Patch', async ({ page }) => {
   // 9. Final patient information screen
   // ============================================================
 
-  await expect(
-    page.getByText('Fill in your information below.', {
-      exact: true
-    })
-  ).toBeVisible();
+  // await expect(
+  //   page.getByText('Fill in your information below.', {
+  //     exact: true
+  //   })
+  // ).toBeVisible();
 
+
+  // // ============================================================
+  // // 10. Select "Myself"
+  // // ============================================================
+
+  // const myselfOption = page.locator(
+  //   'input[name="pid.submission_for"][value="myself"]'
+  // );
+
+  // await expect(myselfOption).toBeVisible();
+
+  // await myselfOption.check();
+
+  // await expect(myselfOption).toBeChecked();
+
+
+  // // ============================================================
+  // // STOP HERE
+  // //
+  // // You said you want to manually fill the final patient form.
+  // // Playwright Inspector will pause the test here.
+  // // ============================================================
+
+  // await page.pause();
 
   // ============================================================
-  // 10. Select "Myself"
-  // ============================================================
+// FINAL PATIENT INFORMATION FORM
+// ============================================================
 
-  const myselfOption = page.locator(
-    'input[name="pid.submission_for"][value="myself"]'
-  );
-
-  await expect(myselfOption).toBeVisible();
-
-  await myselfOption.check();
-
-  await expect(myselfOption).toBeChecked();
+// Verify final form is displayed
+await expect(
+  page.getByRole('heading', {
+    name: 'Fill in your information below.'
+  })
+).toBeVisible();
 
 
-  // ============================================================
-  // STOP HERE
-  //
-  // You said you want to manually fill the final patient form.
-  // Playwright Inspector will pause the test here.
-  // ============================================================
+// ============================================================
+// Test data
+// ============================================================
 
-  await page.pause();
+// Synthetic QA data only.
+// Do not use real patient information.
+
+const timestamp = Date.now();
+
+const patientData = {
+  firstName: `Test${timestamp}`,
+  middleName: 'QA',
+  surname: 'Patient',
+
+  // Use values that match the application's dropdown options
+  gender: 'Female',
+  sexAtBirth: 'Female',
+
+  // DD/MM/YYYY
+  dob: '15/06/1995',
+
+  // Synthetic NHS-format test value
+  nhsNumber: '9434765919',
+
+  // UK-style test mobile number
+  mobile: '07700900000',
+
+  // Optional
+  landline: '01632960000',
+
+  email: `qa.patient.${timestamp}@example.com`,
+
+  // Example UK postcode
+  postcode: 'M1 1AA'
+};
+
+
+// ============================================================
+// Select "Myself"
+// ============================================================
+
+const myselfRadio = page.locator(
+  'input[name="pid.submission_for"][value="myself"]'
+);
+
+await myselfRadio.check();
+
+await expect(myselfRadio).toBeChecked();
+
+
+// ============================================================
+// First name
+// ============================================================
+
+await page
+  .locator('input[name="pid.first_name"]')
+  .fill(patientData.firstName);
+
+
+// ============================================================
+// Middle name
+// ============================================================
+
+await page
+  .locator('input[name="pid.middle_name"]')
+  .fill(patientData.middleName);
+
+
+// ============================================================
+// Surname
+// ============================================================
+
+await page
+  .locator('input[name="pid.surname"]')
+  .fill(patientData.surname);
+
+
+// ============================================================
+// Gender
+// ============================================================
+
+await page
+  .locator('#mui-component-select-pid\\.gender')
+  .click();
+
+await page
+  .getByRole('option', {
+    name: patientData.gender,
+    exact: true
+  })
+  .click();
+
+
+// ============================================================
+// Sex at birth
+// ============================================================
+
+await page
+  .locator('#mui-component-select-pid\\.sex_at_birth')
+  .click();
+
+await page
+  .getByRole('option', {
+    name: patientData.sexAtBirth,
+    exact: true
+  })
+  .click();
+
+
+// ============================================================
+// Date of birth
+// ============================================================
+
+// The date input is readonly, so use the application's
+// date picker rather than trying to force-fill it.
+
+await page
+  .locator('input[name="pid.dob"]')
+  .click();
+
+
+// If your date picker supports direct text entry,
+// you can use the following instead:
+//
+// await page.locator('input[name="pid.dob"]').fill(patientData.dob);
+
+
+// ============================================================
+// NHS Number
+// ============================================================
+
+await page
+  .locator('input[name="pid.nhs_number"]')
+  .fill(patientData.nhsNumber);
+
+
+// ============================================================
+// Mobile number
+// ============================================================
+
+await page
+  .locator('input[name="pid.mobile_number"]')
+  .fill(patientData.mobile);
+
+
+// ============================================================
+// Landline number
+// ============================================================
+
+await page
+  .locator('input[name="pid.landline"]')
+  .fill(patientData.landline);
+
+
+// ============================================================
+// Email
+// ============================================================
+
+await page
+  .locator('input[name="pid.email"]')
+  .fill(patientData.email);
+
+
+// ============================================================
+// Postcode
+// ============================================================
+
+await page
+  .locator('input[name="pid.postcode"]')
+  .fill(patientData.postcode);
+
+
+// ============================================================
+// Practice
+// ============================================================
+
+// Practice is disabled and already populated:
+// "Keston and Moorings medical practice"
+
+// No action required.
+
+await expect(
+  page.locator('input[name="pid.practice"]')
+).toHaveValue('Keston and Moorings medical practice');
+
+
+// ============================================================
+// Verify entered data
+// ============================================================
+
+await expect(
+  page.locator('input[name="pid.first_name"]')
+).toHaveValue(patientData.firstName);
+
+await expect(
+  page.locator('input[name="pid.surname"]')
+).toHaveValue(patientData.surname);
+
+await expect(
+  page.locator('input[name="pid.email"]')
+).toHaveValue(patientData.email);
+
+await expect(
+  page.locator('input[name="pid.postcode"]')
+).toHaveValue(patientData.postcode);
+
+
+// ============================================================
+// Submit
+// ============================================================
+
+await page
+  .getByRole('button', {
+    name: 'Submit',
+    exact: true
+  })
+  .click();
+
+
+
+
 });
