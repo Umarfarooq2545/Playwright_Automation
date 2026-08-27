@@ -34,7 +34,7 @@ test('orders regular medication and completes patient details', async ({
       'h3[title="Which pharmacy do you want to pick it up at?"]'
     )
     .locator('xpath=..')
-    .locator('textarea')
+    .locator('textarea:not([aria-hidden="true"])')
     .fill('Keston and Moorings medical practice');
 
   await page
@@ -69,11 +69,19 @@ test('orders regular medication and completes patient details', async ({
     .fill(patient.surname);
 
   // Date of birth: 15 June 1995
-  await page.getByLabel('Day').selectOption('15');
-  await page.getByLabel('Month').selectOption('06');
-  await page.getByLabel('Year').selectOption('1995');
+  const dateOfBirthFields = page.getByRole('combobox');
 
-  await page.getByLabel('Sex').selectOption({ label: 'Female' });
+  await dateOfBirthFields.nth(0).click();
+  await page.getByRole('option', { name: '15', exact: true }).click();
+
+  await dateOfBirthFields.nth(1).click();
+  await page.getByRole('option', { name: 'June', exact: true }).click();
+
+  await dateOfBirthFields.nth(2).click();
+  await page.getByRole('option', { name: '1995', exact: true }).click();
+
+  await page.getByLabel('Sex').fill('Female');
+  await page.getByRole('option', { name: 'Female', exact: true }).click();
 
   await page
     .getByLabel('Post code')
@@ -84,11 +92,6 @@ test('orders regular medication and completes patient details', async ({
     .getByRole('radio', { name: 'Email', exact: true })
     .check();
 
-  const emailField = page.getByLabel(/email/i);
-
-  if (await emailField.isVisible()) {
-    await emailField.fill(patient.email);
-  }
 
   // Pause for manual review before continuing.
   await page.pause();
