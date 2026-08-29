@@ -89,10 +89,13 @@ test('orders regular medication and completes patient details', async ({
 
   // Select email as the preferred contact method
   await page
-    .getByRole('radio', { name: 'Email', exact: true })
+    .getByRole('radio', { name: 'I will contact the practice myself', exact: true })
     .check();
 
-
+ await page
+    .locator('#btn-next')
+    .click();
+    
   // Pause for manual review before continuing.
   await page.pause();
 });

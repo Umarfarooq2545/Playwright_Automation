@@ -448,9 +448,5 @@ await page
     exact: true
   })
   .click();
-  
-
-
-
 
 });
