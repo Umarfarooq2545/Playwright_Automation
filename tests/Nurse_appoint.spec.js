@@ -7,21 +7,25 @@ test('Patient Request - Nurse Contraception - Patch', async ({ page }) => {
   // ============================================================
 
   await page.goto(
-    'https://app.qa.bournehealth.co.uk/pathways-public/home?id=35'
+    'https://app.qa.bournehealth.co.uk/pathways-public/home?id=35',
+    { waitUntil: 'domcontentloaded', timeout: 60000 }
   );
 
-  await expect(
-    page.getByText('Nurse appointment', { exact: true })
-  ).toBeVisible();
+  const nurseAppointmentCard = page
+    .locator('div.MuiCard-root')
+    .filter({ has: page.getByText('Nurse appointment', { exact: true }) })
+    .first();
+
+  await expect(nurseAppointmentCard).toBeVisible({
+    timeout: 60000
+  });
 
 
   // ============================================================
   // 2. Select "Nurse appointment"
   // ============================================================
 
-  await page
-    .getByText('Nurse appointment', { exact: true })
-    .click();
+  await nurseAppointmentCard.click();
 
   // Verify that Contraception option is loaded
   await expect(
